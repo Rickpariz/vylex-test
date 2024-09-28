@@ -1,0 +1,42 @@
+version: '3.7'
+
+services:
+  app:
+    build: .
+    environment:
+      DATABASE_URL: mysql://root:root@vylex-mysql:3306/vylex
+      MONGODB_URL: mongodb://vylex-mongodb:27017
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - vylex-mysql
+    ports:
+      - "3000:3000"
+
+  vylex-mysql:
+    container_name: vylex-mysql
+    platform: linux/x86_64
+    image: mysql
+    restart: always
+    volumes:
+      - mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: $PASS_DB
+      MYSQL_DATABASE: $NAME_DB
+    ports:
+      - 3306:3306
+
+  vylex-mongodb:
+    container_name: vylex-mongodb
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
+    driver: local
+  mysql-data:
+    driver: local
